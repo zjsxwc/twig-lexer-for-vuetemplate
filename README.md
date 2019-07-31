@@ -12,6 +12,10 @@
 
 ```
 
+> PS: 对于symfony需要在controller里对twig设置lexer，建议在覆盖controller自带的setContainer()方法里处理，原因是symfony的twig bundle需要compile各个bundle拓展
+
+
+
 然后我们在twig里写vue1.x模板，再在vue1.x模板里写twig
 
 input twig:
