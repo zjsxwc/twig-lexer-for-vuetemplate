@@ -37,6 +37,7 @@ input twig:
     {{ sdsdf }}
 
     <%= "工厂"|trans %>
+    <%= 1+2 %>
     666
 {% endvuetemplate %}
 
@@ -57,6 +58,7 @@ output:
     {{ sdsdf }}
 
     Factory
+    3
     666
 ```
 
