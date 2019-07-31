@@ -57,6 +57,7 @@ class Lexer extends Twig_Lexer
             'tag_variable' => array('{{', '}}'),
             'whitespace_trim' => '-',
             'interpolation' => array('#{', '}'),
+            'tag_variable_in_vue_template' => array('<%=', '%>'),
         ), $options);
 
         $this->regexes = array(
@@ -233,9 +234,9 @@ class Lexer extends Twig_Lexer
      */
     private function lexVarInVueTemplate()
     {
-        $lex_var = '/\s*'.preg_quote($this->options['whitespace_trim']. '%>', '/').'\s*|\s*'.preg_quote('%>', '/').'/A';
-        preg_match($lex_var, $this->code, $match, null, $this->cursor);
-        if (empty($this->brackets) && preg_match($lex_var, $this->code, $match, null, $this->cursor)) {
+        $lexVarInVueTemplatePattern = '/\s*'.preg_quote($this->options['whitespace_trim'].$this->options['tag_variable_in_vue_template'][1], '/').'\s*|\s*'.preg_quote($this->options['tag_variable_in_vue_template'][1], '/').'/A';
+        preg_match($lexVarInVueTemplatePattern, $this->code, $match, null, $this->cursor);
+        if (empty($this->brackets) && preg_match($lexVarInVueTemplatePattern, $this->code, $match, null, $this->cursor)) {
             $this->pushToken(Twig_Token::VAR_END_TYPE);
             $this->moveCursor($match[0]);
             $this->popState();
@@ -344,8 +345,9 @@ class Lexer extends Twig_Lexer
         if (!preg_match($this->regexes['lex_block_vue_template_close'], $this->code, $endMatch, PREG_OFFSET_CAPTURE, $this->cursor)) {
             throw new Twig_Error_Syntax('Unexpected end of file: Unclosed "vuetemplate" block.', $this->lineno, $this->source);
         }
+
         //find <%=
-        preg_match('/(\<%=)/s', $this->code, $match, PREG_OFFSET_CAPTURE, $this->cursor);
+        preg_match('/('.preg_quote($this->options['tag_variable_in_vue_template'][0]).')/s', $this->code, $match, PREG_OFFSET_CAPTURE, $this->cursor);
         if (isset($match[0])) {
             $text = substr($this->code, $this->cursor, $match[0][1] - $this->cursor);
             $this->moveCursor($text . $match[0][0]);
@@ -475,5 +477,4 @@ class Lexer extends Twig_Lexer
         $this->state = array_pop($this->states);
     }
 }
-
 
