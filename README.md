@@ -12,7 +12,7 @@
 
 ```
 
-> PS: 对于symfony需要在controller里对twig设置lexer，建议在覆盖controller自带的setContainer()方法里处理，原因是symfony的twig bundle需要compile各个bundle拓展
+> PS: 对于symfony需要在写一个controller event listener 或 subscriber 每次在controller之前设置 twig 的 lexer，因为symfony的twig会经过一系列的初始化和compile，不能直接无脑覆盖或者在kernel boot后直接设置lexer
 
 
 
